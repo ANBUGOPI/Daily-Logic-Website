@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Daily Logic — A fresh puzzle, every day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1D2233;
+    --ink-soft:#565C74;
+    --bg:#F5F6FB;
+    --paper:#FFFFFF;
+    --line:#E2E4F0;
+    --accent:#3B3FA1;
+    --accent-soft:#EEEEFB;
+    --accent-2:#1F9E7C;
+    --amber:#E8A93B;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --display: 'Space Grotesk', ui-sans-serif, sans-serif;
+    --body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--body); line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  section{ padding: 96px 24px; }
+  @media (max-width:700px){ section{ padding: 64px 20px; } }
+  .wrap{ max-width:1120px; margin:0 auto; }
+  .wrap-narrow{ max-width:760px; margin:0 auto; }
+
+  /* -------- Nav -------- */
+  header.topbar{
+    position:sticky; top:0; z-index:50;
+    background:rgba(245,246,251,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{
+    max-width:1120px; margin:0 auto;
+    padding: 16px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--display); font-weight:700; font-size:17px;
+    text-decoration:none; color:var(--ink);
+  }
+  .brand-mark{
+    width:30px; height:30px; border-radius:8px;
+    background:
+      linear-gradient(135deg, var(--accent), #5457C4);
+    display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
+    gap:2px; padding:5px;
+  }
+  .brand-mark span{ background:rgba(255,255,255,0.85); border-radius:1.5px; }
+  .brand-mark span:nth-child(2){ background:rgba(255,255,255,0.4); }
+  .brand-mark span:nth-child(3){ background:rgba(255,255,255,0.4); }
+  nav.links{ display:flex; align-items:center; gap:28px; font-size:14.5px; }
+  nav.links a{ text-decoration:none; color:var(--ink-soft); font-weight:500; }
+  nav.links a:hover{ color:var(--ink); }
+  .btn-play{
+    text-decoration:none;
+    background:var(--ink); color:#fff;
+    font-size:13.5px; font-weight:600;
+    padding:9px 16px; border-radius:9px;
+    white-space:nowrap;
+  }
+  @media (max-width:700px){ nav.links a.hide-mobile{ display:none; } }
+
+  /* -------- Hero -------- */
+  .grid-field{ position:relative; overflow:hidden; }
+  .grid-field::before{
+    content:""; position:absolute; inset:0;
+    background-image:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px),
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 75% 65% at 50% 0%, black 35%, transparent 85%);
+  }
+  header.hero{ position:relative; padding: 88px 24px 40px; text-align:center; }
+  .hero-inner{ position:relative; max-width:640px; margin:0 auto; }
+  .kicker{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); background:var(--accent-soft);
+    padding:7px 14px; border-radius:100px; border:1px solid #DADCF6;
+  }
+  .kicker .dot{ width:6px; height:6px; border-radius:50%; background:var(--accent-2); }
+  h1.title{
+    font-family:var(--display); font-weight:700;
+    font-size:clamp(36px, 6vw, 58px); letter-spacing:-0.02em;
+    margin: 22px 0 16px;
+  }
+  h1.title .accent-word{ color:var(--accent); }
+  .subtitle{ color:var(--ink-soft); font-size:18px; max-width:480px; margin:0 auto; }
+  .cta-row{
+    margin-top:34px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+  .btn-primary{
+    text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff; font-weight:600; font-size:15px;
+    padding:14px 24px; border-radius:11px;
+  }
+  .btn-secondary{
+    text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    background:var(--paper); color:var(--ink); font-weight:600; font-size:15px;
+    padding:14px 24px; border-radius:11px; border:1px solid var(--line);
+  }
+  .streak-note{
+    margin-top:18px; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+  }
+
+  /* -------- Phone mock -------- */
+  .phone-stage{
+    position:relative; margin-top:64px;
+    display:flex; justify-content:center; align-items:flex-end; gap:24px;
+  }
+  .phone{
+    width:230px; border-radius:30px; background:var(--ink);
+    padding:8px; box-shadow: 0 30px 60px -25px rgba(29,34,51,0.35);
+  }
+  .phone .screen{
+    background:var(--paper); border-radius:23px; overflow:hidden;
+    height:460px; display:flex; flex-direction:column;
+  }
+  .phone.side{ width:170px; opacity:0.55; transform:translateY(28px) scale(0.94); }
+  .phone.side .screen{ height:400px; }
+  @media (max-width:760px){ .phone.side{ display:none; } }
+
+  .screen .sbar{ height:14px; background:var(--paper); flex:none; }
+  .screen-home{ display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; padding:20px; text-align:center; background:var(--bg); }
+  .screen-home .app-name{ font-family:var(--display); font-weight:700; font-size:20px; color:var(--accent); }
+  .screen-home .app-sub{ font-size:11px; color:var(--ink-soft); margin-top:4px; }
+  .screen-home .streak-pill{
+    margin-top:22px; background:var(--paper); border:1px solid var(--line);
+    border-radius:12px; padding:9px 16px; font-size:12px; font-weight:600;
+  }
+  .screen-home .play-btn{
+    margin-top:26px; background:var(--accent); color:#fff; font-size:12.5px; font-weight:600;
+    padding:12px 22px; border-radius:100px;
+  }
+  .screen-board{ flex:1; background:var(--paper); padding:18px; display:flex; flex-direction:column; }
+  .screen-board .board-title{ font-family:var(--mono); font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
+  .mini-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:5px; flex:1; }
+  .mini-grid .cell{ background:var(--accent-soft); border-radius:5px; }
+  .mini-grid .cell.on{ background:var(--accent); }
+  .mini-grid .cell.on2{ background:var(--amber); }
+
+  /* -------- Feature grid -------- */
+  .section-head{ text-align:center; max-width:560px; margin:0 auto 52px; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); }
+  .section-head h2{ font-family:var(--display); font-weight:600; font-size:clamp(26px,3.6vw,34px); margin:10px 0 0; letter-spacing:-0.01em; }
+  .section-head p{ color:var(--ink-soft); margin-top:12px; font-size:16px; }
+
+  .feature-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; }
+  @media (max-width:860px){ .feature-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .feature-grid{ grid-template-columns:1fr; } }
+
+  .feature-card{
+    background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:26px;
+  }
+  .feature-card .icon-cell{
+    width:42px; height:42px; border-radius:10px; background:var(--accent-soft);
+    display:flex; align-items:center; justify-content:center; margin-bottom:16px;
+    font-family:var(--mono); font-weight:600; color:var(--accent); font-size:14px;
+  }
+  .feature-card h3{ font-family:var(--display); font-size:17px; font-weight:600; margin:0 0 8px; }
+  .feature-card p{ color:var(--ink-soft); font-size:14.5px; margin:0; }
+
+  /* -------- Themes strip -------- */
+  .themes-panel{
+    background:var(--paper); border:1px solid var(--line); border-radius:20px;
+    padding:40px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;
+  }
+  .themes-panel .copy{ max-width:360px; }
+  .themes-panel h3{ font-family:var(--display); font-size:22px; margin:0 0 8px; }
+  .themes-panel p{ color:var(--ink-soft); margin:0; font-size:15px; }
+  .swatch-row{ display:flex; gap:10px; }
+  .swatch{ width:44px; height:44px; border-radius:12px; border:3px solid var(--paper); box-shadow:0 0 0 1px var(--line); }
+
+  /* -------- CTA -------- */
+  .cta-panel{
+    background:var(--ink); border-radius:24px; padding:60px 40px; text-align:center;
+    position:relative; overflow:hidden;
+  }
+  .cta-panel::before{
+    content:""; position:absolute; inset:0;
+    background-image: linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px),
+                       linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 70% 80% at 50% 0%, black 30%, transparent 80%);
+  }
+  .cta-panel .inner{ position:relative; }
+  .cta-panel h2{ font-family:var(--display); color:#fff; font-size:clamp(24px,3.4vw,32px); margin:0 0 12px; }
+  .cta-panel p{ color:#B9BCD8; margin:0 0 28px; }
+  .cta-panel .btn-primary{ background:#fff; color:var(--ink); }
+
+  /* -------- Footer -------- */
+  footer{ border-top:1px solid var(--line); padding: 40px 24px; }
+  .footer-inner{
+    max-width:1120px; margin:0 auto; display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  footer .brand{ font-size:15px; }
+  footer .foot-links{ display:flex; gap:22px; font-size:13.5px; color:var(--ink-soft); }
+  footer .foot-links a{ text-decoration:none; color:var(--ink-soft); }
+  footer .foot-links a:hover{ color:var(--ink); }
+  .grid-mark{ font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:0.08em; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+      Daily Logic
+    </a>
+    <nav class="links">
+      <a href="#features" class="hide-mobile">Features</a>
+      <a href="#themes" class="hide-mobile">Themes</a>
+      <a href="privacy-policy.html">Privacy</a>
+      <a class="btn-play" href="#get">Get the app</a>
+    </nav>
+  </div>
+</header>
+
+<div class="grid-field" id="top">
+  <header class="hero">
+    <div class="hero-inner">
+      <span class="kicker"><span class="dot"></span> New puzzle every day</span>
+      <h1 class="title">One puzzle a day.<br>Keep the <span class="accent-word">streak</span> alive.</h1>
+      <p class="subtitle">Daily Logic serves up a fresh set of logic puzzles each morning — quick enough for a coffee break, sharp enough to earn bragging rights on the leaderboard.</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="#get">Get it on Google Play</a>
+        <a class="btn-secondary" href="#features">See how it works</a>
+      </div>
+      <div class="streak-note">🔥 Synced streaks · 🏆 Leaderboard · 🎨 5 color themes</div>
+    </div>
+
+    <div class="phone-stage">
+      <div class="phone side">
+        <div class="screen">
+          <div class="sbar"></div>
+          <div class="screen-board">
+            <div class="board-title">Today's pack</div>
+            <div class="mini-grid">
+              <div class="cell on"></div><div class="cell"></div><div class="cell"></div><div class="cell on2"></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell on"></div><div class="cell"></div><div class="cell"></div><div class="cell on2"></div>
+              <div class="cell on2"></div><div class="cell"></div><div class="cell on"></div><div class="cell"></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell on"></div><div class="cell"></div>
+              <div class="cell"></div><div class="cell on2"></div><div class="cell"></div><div class="cell"></div><div class="cell on"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone">
+        <div class="screen">
+          <div class="sbar"></div>
+          <div class="screen-home">
+            <div class="app-name">Daily Logic</div>
+            <div class="app-sub">A fresh set of logic puzzles, every day.</div>
+            <div class="streak-pill">🔥 12 day streak</div>
+            <div class="play-btn">Play Today's Pack</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="phone side">
+        <div class="screen">
+          <div class="sbar"></div>
+          <div class="screen-board">
+            <div class="board-title">Leaderboard</div>
+            <div class="mini-grid" style="grid-template-columns:1fr;">
+              <div class="cell on" style="height:26px;"></div>
+              <div class="cell on2" style="height:26px;"></div>
+              <div class="cell" style="height:26px;"></div>
+              <div class="cell" style="height:26px;"></div>
+              <div class="cell on" style="height:26px; opacity:0.5;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Why people keep coming back</span>
+      <h2>Small puzzles, real habit</h2>
+      <p>Every feature is built around one loop: open the app, solve today's pack, come back tomorrow.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon-cell">01</div>
+        <h3>A new pack, daily</h3>
+        <p>One fresh set of logic puzzles unlocks every day — no endless backlog, no burnout.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-cell">02</div>
+        <h3>Streaks that sync</h3>
+        <p>Sign in with Google Play Games and your streak follows you across every device.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-cell">03</div>
+        <h3>Leaderboard</h3>
+        <p>See how your streak stacks up against friends and the wider Daily Logic community.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-cell">04</div>
+        <h3>Instant celebration</h3>
+        <p>Finish a pack and get an immediate, satisfying recap of your score.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-cell">05</div>
+        <h3>No account required</h3>
+        <p>Play fully offline and locally — signing in is entirely optional.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon-cell">06</div>
+        <h3>Built for a break</h3>
+        <p>Each pack is sized for five minutes — perfect for a commute or a coffee break.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="themes">
+  <div class="wrap">
+    <div class="themes-panel">
+      <div class="copy">
+        <h3>Pick a palette that fits your mood</h3>
+        <p>Five color themes, switchable anytime in Settings — the board adapts instantly.</p>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch" style="background:#3B3FA1;"></div>
+        <div class="swatch" style="background:#1F9E7C;"></div>
+        <div class="swatch" style="background:#E8A93B;"></div>
+        <div class="swatch" style="background:#D9556B;"></div>
+        <div class="swatch" style="background:#1D2233;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="get">
+  <div class="wrap-narrow">
+    <div class="cta-panel">
+      <div class="inner">
+        <h2>Start your streak today</h2>
+        <p>Free to play, no sign-in required to start.</p>
+        <a class="btn-primary" href="#">Get it on Google Play</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><span></span><span></span><span></span><span></span></span>
+      Daily Logic
+    </a>
+    <div class="foot-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="mailto:dipi.2411.0194@gmail.com">Contact</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
